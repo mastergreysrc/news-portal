@@ -1,0 +1,32 @@
+# Docker
+node_modules/
+.svelte-kit/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment
+.env
+!.env.example
+
+# Data
+data/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Plans / docs
+.hermes/
+docs/
+*.md
+!README.md
+
+# OS junk
+.DS_Store
+Thumbs.db

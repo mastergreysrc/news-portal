@@ -1,0 +1,142 @@
+# ============================================================
+# News Portal Configuration
+# ============================================================
+
+app:
+  name: "Gaming News PL"
+  host: "0.0.0.0"
+  port: 8000
+  secret_key: "${SECRET_KEY}"       # from .env
+
+schedule:
+  runs_per_day: 2
+  times: ["08:00", "20:00"]        # CET
+  timezone: "Europe/Warsaw"
+
+translation:
+  # Groq handles both translation + summarization in one call.
+  # Better Polish quality than Google Translate, no separate translation API needed.
+  provider: "groq"                  # groq (recommended) | google (fallback) | none
+  source_lang: "EN"
+  target_lang: "PL"
+
+summarization:
+  enabled: true                     # Groq free tier — translation + summary in one call
+  provider: "groq"
+  endpoint: "https://api.groq.com/openai/v1"
+  api_key: "${GROQ_API_KEY}"        # free from console.groq.com
+  model: "llama-3.1-8b-instant"    # fast, free, good PL quality
+
+telegram:
+  push_enabled: false               # set true after integrating with your bot
+  chat_id: ""                       # Telegram chat ID to push digest to
+  push_mode: "digest"              # digest (top stories) | all (every new item)
+
+deduplication:
+  title_similarity_threshold: 0.75
+  lookback_days: 3
+
+popularity:
+  reddit_weight: 1.0
+  twitter_weight: 0.9
+  youtube_weight: 0.8
+  rss_weight: 0.5
+  scrape_weight: 0.5
+
+categories:
+  - name: "Gaming"
+    slug: "gaming"
+    icon: "🎮"
+    sources:
+      # --- Reddit ---
+      - type: reddit
+        name: "r/GamingLeaksAndRumours"
+        config:
+          subreddit: "GamingLeaksAndRumours"
+          limit: 25
+          sort: "hot"
+      - type: reddit
+        name: "r/XboxGamePass"
+        config:
+          subreddit: "XboxGamePass"
+          limit: 25
+      - type: reddit
+        name: "r/pcgaming"
+        config:
+          subreddit: "pcgaming"
+          limit: 25
+      - type: reddit
+        name: "r/NintendoSwitch"
+        config:
+          subreddit: "NintendoSwitch"
+          limit: 25
+      - type: reddit
+        name: "r/gaming"
+        config:
+          subreddit: "gaming"
+          limit: 25
+      - type: reddit
+        name: "r/Steam"
+        config:
+          subreddit: "Steam"
+          limit: 25
+      - type: reddit
+        name: "r/playstation"
+        config:
+          subreddit: "playstation"
+          limit: 25
+
+      # --- Twitter/X ---
+      - type: twitter
+        name: "X/Twitter — Gaming"
+        config:
+          keywords: ["Steam", "Nintendo", "Xbox", "PlayStation", "Sony", "retro gaming", "premiera gry"]
+          languages: ["en", "pl"]
+          limit: 50
+
+      # --- YouTube ---
+      - type: youtube
+        name: "YouTube — Gaming"
+        config:
+          keywords: ["gaming news", "premiery gier", "game review", "gaming leaks"]
+          limit: 20
+
+      # --- RSS ---
+      - type: rss
+        name: "Gry-Online.pl"
+        config:
+          url: "https://www.gry-online.pl/rss/gry.xml"
+      - type: rss
+        name: "CD-Action"
+        config:
+          url: "https://cdaction.pl/feed/"
+      - type: rss
+        name: "Eurogamer.pl"
+        config:
+          url: "https://www.eurogamer.pl/feed"
+
+      # --- Scraped Websites ---
+      - type: scrape
+        name: "VideoGamesChronicle"
+        config:
+          url: "https://www.videogameschronicle.com/"
+          article_selector: "article"
+          title_selector: "h2 a"
+          link_selector: "h2 a"
+          limit: 15
+      - type: scrape
+        name: "Insider Gaming"
+        config:
+          url: "https://insider-gaming.com/"
+          article_selector: "article"
+          title_selector: "h3 a"
+          link_selector: "h3 a"
+          limit: 15
+      - type: scrape
+        name: "GameSpot"
+        config:
+          url: "https://www.gamespot.com/news/"
+          article_selector: "article"
+          title_selector: "h3 a"
+          link_selector: "h3 a"
+          limit: 15

@@ -1,0 +1,21 @@
+# Build and run the News Portal
+services:
+  news-portal:
+    build: .
+    container_name: news-portal
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - news-data:/app/data       # SQLite database persists here
+      - ./config.yaml:/app/config.yaml:ro  # Config editable from host
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  news-data:

@@ -1,0 +1,28 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t news-portal .
+
+      - name: Smoke test
+        run: |
+          docker run -d --name news-portal-test \
+            -e GROQ_API_KEY=test \
+            -e SECRET_KEY=test \
+            -e ADMIN_KEY=test \
+            -p 8000:8000 news-portal
+          sleep 3
+          curl -f http://localhost:8000/api/health || exit 1
+          docker stop news-portal-test
+          docker rm news-portal-test
